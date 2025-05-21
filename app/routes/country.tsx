@@ -55,11 +55,11 @@ export default function Country() {
         <h2 className="font-bold mb-4 text-4xl">Países que fazem fronteira</h2>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 flex-wrap gap-8">
+          {/* <CountryCard />
           <CountryCard />
           <CountryCard />
           <CountryCard />
-          <CountryCard />
-          <CountryCard />
+          <CountryCard /> */}
         </div>
       </section>
     </main>
