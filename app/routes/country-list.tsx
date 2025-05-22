@@ -1,57 +1,26 @@
 import { CountryCard } from "~/components/CountryCard";
-import type { Route } from "./+types/home";
 import { useEffect, useState } from "react";
-
-type CountryItem = {
-  flags: {
-    png: string;
-    svg: string;
-    alt: string;
-  };
-  name: {
-    common: string;
-    official: string;
-    nativeName: {
-      ara: {
-        official: string;
-        common: string;
-      };
-      eng: {
-        official: string;
-        common: string;
-      };
-      tir: {
-        official: string;
-        common: string;
-      };
-    };
-  };
-  cca2: string;
-};
+import type { Route } from "../+types/root";
+import { fetchCountryList, type CountryItem } from "~/service/api";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "New React Router App" },
-    { name: "description", content: "Welcome to React Router!" }
+    { title: "Lista de Paises" },
+    { name: "description", content: "Lista de todos países" }
   ];
 }
 
 export default function Home() {
-  const [list, setList] = useState([]);
+  const [list, setList] = useState<CountryItem[]>([]);
 
-  async function fetchCountryList() {
-    const response = await fetch(
-      "https://restcountries.com/v3.1/all?fields=name,flags,cca2"
-    );
-    const json = await response.json();
+  async function getCountryList() {
+    const data = await fetchCountryList();
 
-    console.log("json ::>", json);
-
-    setList(json);
+    setList(data);
   }
 
   useEffect(() => {
-    fetchCountryList();
+    getCountryList();
   }, []);
 
   return (
