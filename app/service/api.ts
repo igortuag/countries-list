@@ -21,10 +21,17 @@ export interface CountryDetails extends CountryItem {
   languages: {
     [key: string]: string;
   };
+  borders: string[];
 }
 
-export const fetchCountryList = async () => {
-  const response = await fetch(`${BASE_URL}/all?fields=name,flags,cca2`);
+export const fetchCountryList = async (listCode?: string[]) => {
+  const listCodeString = listCode ? listCode.join(",") : "";
+  const codeParam = listCodeString ? `codes=${listCodeString}` : "";
+  const fieldsParam = "fields=name,flags,cca2";
+
+  const endpoint = codeParam ? `alpha?${fieldsParam}&${codeParam}` : `all?${fieldsParam}`;
+
+  const response = await fetch(`${BASE_URL}/${endpoint}`);
   const json = await response.json();
 
   return json as CountryItem[];

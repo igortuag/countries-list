@@ -1,7 +1,8 @@
-import { useEffect, useState, useTransition } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 import { Link, useParams } from "react-router";
+import { CountryCard } from "~/components/CountryCard";
 import { ArrowIcon } from "~/components/Icons";
-import { fetchCountry, type CountryDetails } from "~/service/api";
+import { type CountryItem, fetchCountry, type CountryDetails, fetchCountryList } from "~/service/api";
 
 export default function Country() {
   const params = useParams();
@@ -9,6 +10,7 @@ export default function Country() {
   const [isLoading, setTransition] = useTransition();
 
   const [country, setCountry] = useState<CountryDetails | null>(null);
+  const [borderList, setBorderList] = useState<CountryItem[] | []>([]);
 
   async function getCountry() {
     if (!cca2) {
@@ -22,7 +24,18 @@ export default function Country() {
 
   useEffect(() => {
     getCountry();
-  }, []);
+  }, [cca2]);
+
+  const getCountryBorderList = useCallback(async () => {
+    const borderListCode = country?.borders;
+    const data = await fetchCountryList(borderListCode);
+    
+    setBorderList(data);
+  }, [country])
+
+  useEffect(() => {
+    getCountryBorderList();
+  }, [getCountryBorderList]);
 
   if (isLoading) {
     return <p>Loading</p>;
@@ -31,6 +44,8 @@ export default function Country() {
   if (!country) {
     return <p>Country not found</p>;
   }
+
+  // console.log("country.borders ::>", country.borders);
 
   const languages = Object.values(country.languages);
 
@@ -80,7 +95,7 @@ export default function Country() {
         <img
           src={country.flags.png}
           alt={country.flags.alt}
-          className="w-full max-w-[458px] block rounded-3xl h-auto"
+          className="w-full max-w-[458px] border border-gray-100 block rounded-3xl h-auto"
         />
       </section>
 
@@ -88,11 +103,15 @@ export default function Country() {
         <h2 className="font-bold mb-4 text-4xl">Países que fazem fronteira</h2>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 flex-wrap gap-8">
-          {/* <CountryCard />
-          <CountryCard />
-          <CountryCard />
-          <CountryCard />
-          <CountryCard /> */}
+          {/* <CountryCard /> */}
+          {borderList?.map((border) => (
+            <CountryCard
+              key={border.cca2}
+              code={border.cca2}
+              flag={border.flags.png}
+              name={border.name.common}
+            />
+          ))}
         </div>
       </section>
     </main>
